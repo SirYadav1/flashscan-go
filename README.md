@@ -5,7 +5,7 @@
 [![Telegram](https://img.shields.io/badge/Telegram-Join%20Group-0088cc?style=flat-square&logo=telegram)](https://t.me/AdwanceSNI)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/SirYadav1/flashscan-go?style=flat-square)](https://github.com/SirYadav1/flashscan-go)
 [![License](https://img.shields.io/github/license/SirYadav1/flashscan-go?style=flat-square)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/SirYadav1/flashscan-go?style=flat-square)](https://github.com/SirYadav1/flashscan-go/releases)
+[![Release](https://img.shields.io/github/v/tag/SirYadav1/flashscan-go?label=release&style=flat-square)](https://github.com/SirYadav1/flashscan-go/releases)
 
 ## Installation
 
