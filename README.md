@@ -12,9 +12,9 @@
 **FlashScan-Go** is a next-generation network scanner built for extreme speed and a premium terminal experience. Optimized for SNI bug hunting and performance testing.
 
 [![Telegram](https://img.shields.io/badge/Telegram-Join%20Group-0088cc?style=flat-square&logo=telegram)](https://t.me/AdwanceSNI)
-[![Go Version](https://img.shields.io/github/go-mod/go-version/SirYadav1/flashscan-go?style=flat-square)](https://github.com/SirYadav1/flashscan-go)
-[![License](https://img.shields.io/github/license/SirYadav1/flashscan-go?style=flat-square)](LICENSE)
-[![Release](https://img.shields.io/github/v/tag/SirYadav1/flashscan-go?label=release&style=flat-square)](https://github.com/SirYadav1/flashscan-go/releases)
+[![Go Version](https://img.shields.io/badge/Go-1.23.2-blue?style=flat-square&logo=go)](https://github.com/SirYadav1/flashscan-go)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![Release](https://img.shields.io/badge/Release-v2.0.0-orange?style=flat-square)](https://github.com/SirYadav1/flashscan-go/releases)
 
 ---
 
