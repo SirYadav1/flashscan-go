@@ -121,21 +121,38 @@ func (ctx *Ctx) Log(a ...any) {
 	ctx.resultsMutex.Unlock()
 }
 
-// Helper to strip ANSI codes for length calculation
-func stripANSI(str string) string {
-	// Simple ANSI code stripper
-	result := ""
+// Helper to calculate visual width of a string (accounting for ANSI and wide chars)
+func visualWidth(s string) int {
+	w := 0
 	inEscape := false
-	for _, char := range str {
-		if char == '\033' {
+	for _, r := range s {
+		if r == '\033' {
 			inEscape = true
-		} else if inEscape && char == 'm' {
-			inEscape = false
-		} else if !inEscape {
-			result += string(char)
+			continue
+		}
+		if inEscape {
+			if r == 'm' {
+				inEscape = false
+			}
+			continue
+		}
+		// Estimating cell width: Emojis and some special chars are usually 2 cells
+		if r > 0x1F000 || r == 0x26A1 || r == 0x2714 || r == 0x2716 || r == 0x23F1 {
+			w += 2
+		} else {
+			w += 1
 		}
 	}
-	return result
+	return w
+}
+
+func (ctx *Ctx) printBoxLine(content string) {
+	w := visualWidth(content)
+	padding := 67 - w
+	if padding < 0 {
+		padding = 0
+	}
+	fmt.Printf("%s%s%s┃%s\n", ColorBlue, content, strings.Repeat(" ", padding), ColorReset)
 }
 
 // Redraw entire screen with progress and results
@@ -199,27 +216,22 @@ func (ctx *Ctx) LogStat() {
 	// Progress bar line
 	progressLine := fmt.Sprintf("┃ %s⚡ SCANNING... %s[%s] %s%.1f%%%s",
 		ColorWhite+ColorBold, ColorReset, bar, ColorMagenta, percentage, ColorReset)
-	progressLineStripped := stripANSI(progressLine)
-	padding := 67 - len(progressLineStripped)
-	if padding < 0 {
-		padding = 0
-	}
-	fmt.Printf("%s%s%s┃%s\n", ColorBlue, progressLine, strings.Repeat(" ", padding), ColorBlue, ColorReset)
+	ctx.printBoxLine(progressLine)
 
 	fmt.Printf("%s┠──────────────────────────────────────────────────────────────────┨%s\n", ColorBlue, ColorReset)
 
 	// Stats line 1
-	statsLine1 := fmt.Sprintf("┃ %s✔ Success: %s%-5d %s┃ %s✖ Failed: %s%-5d %s┃ %s🚀 Speed: %s%-6.0f %s┃",
+	statsLine1 := fmt.Sprintf("┃ %s✔ Success: %s%-5d %s┃ %s✖ Failed: %s%-5d %s┃ %s🚀 Speed: %s%-6.0f ",
 		ColorGreen, ColorWhite, scanSuccess, ColorBlue,
 		ColorRed, ColorWhite, failed, ColorBlue,
-		ColorMagenta, ColorWhite, speed, ColorBlue)
-	fmt.Printf("%s%s%s\n", ColorBlue, statsLine1, ColorReset)
+		ColorMagenta, ColorWhite, speed)
+	ctx.printBoxLine(statsLine1)
 
 	// Stats line 2
-	statsLine2 := fmt.Sprintf("┃ %s⏱  ETA: %s%-12s %s┃ %s📂 Scanned: %s%d/%d %s┃                    ┃",
+	statsLine2 := fmt.Sprintf("┃ %s⏱  ETA: %s%-12s %s┃ %s📂 Scanned: %s%d/%d %s┃",
 		ColorYellow, ColorWhite, eta, ColorBlue,
 		ColorCyan, ColorWhite, scanComplete, total, ColorBlue)
-	fmt.Printf("%s%s%s\n", ColorBlue, statsLine2, ColorReset)
+	ctx.printBoxLine(statsLine2)
 
 	fmt.Printf("%s┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛%s\n", ColorBlue, ColorReset)
 	fmt.Println()
