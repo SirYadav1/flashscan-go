@@ -1,6 +1,15 @@
 # FlashScan-Go
 
-**High Performance SNI Bug Host Scanner** - A next-generation network scanner by **SirYadav1**.
+```text
+  ______ _           _      _____                 
+ |  ____| |         | |    / ____|                
+ | |__  | | __ _ ___| |__ | (___   ___ __ _ _ __  
+ |  __| | |/ _` / __| '_ \ \___ \ / __/ _` | '_ \ 
+ | |    | | (_| \__ \ | | |____) | (_| (_| | | | |
+ |_|    |_|\__,_|___/_| |_|_____/ \___\__,_|_| |_| v2.0
+```
+
+**FlashScan-Go** is a high-performance network scanner designed for speed, accuracy, and a premium terminal experience. Developed by **SirYadav1**.
 
 [![Telegram](https://img.shields.io/badge/Telegram-Join%20Group-0088cc?style=flat-square&logo=telegram)](https://t.me/AdwanceSNI)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/SirYadav1/flashscan-go?style=flat-square)](https://github.com/SirYadav1/flashscan-go)
