@@ -41,23 +41,11 @@ flashscan-go sni -f subdomains.txt --threads 128 --timeout 5
 
 ## Features
 - **High Performance**: Optimized with DNS Caching & Buffer Pooling
-- **Beautiful UI**: Modern, colorful, and adaptive terminal inter
-### UI and UX Improvements
-- [MODIFY] [pkg/queuescanner/queuescanner.go](file:///x:/project/AdwanceSNI-2.0/flashscan-go/pkg/queuescanner/queuescanner.go):
-    - Enhance the banner with a more premium/modern ASCII art or border.
-    - Improve the progress bar design (e.g., using more detailed characters or different colors).
-    - Refine the results table layout for better readability on different terminal sizes.
-    - Add micro-animations or smoother transitions for the stat updates.
-
-### Documentation and CLI Consistency
-- [MODIFY] [README.md](file:///x:/project/AdwanceSNI-2.0/flashscan-go/README.md):
-    - Fix incorrect flag examples (e.g., `proxy-filename` should be `filename` or `-f`).
-    - Update installation instructions if needed.
-    - Ensure all commands described match the implementation in `cmd/`.
-face
+- **Beautiful UI**: Modern, colorful, and adaptive terminal interface
 - **Dynamic Sizing**: Automatically adjusts to your screen size
 - **Concurrent**: Scans thousands of hosts in seconds
 - **Cross-platform**: Works on Windows, Linux, macOS
+- **DNS Caching**: Highly optimized IP resolution
 
 ## Contributing
 Contributions are welcome! Created by **SirYadav1**.
