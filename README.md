@@ -26,22 +26,35 @@ flashscan-go --help
 flashscan-go direct -f domains.txt -o output.txt
 
 # CDN SSL scan
-flashscan-go cdn-ssl --proxy-filename proxies.txt --target example.com
+flashscan-go cdn-ssl -f proxies.txt --target example.com
 
 # SNI scan with custom parameters
 flashscan-go sni -f subdomains.txt --threads 128 --timeout 5
 ```
 
 ### Available Commands
-- `direct` - Direct domain scanning (Most accurate)
-- `cdn-ssl` - CDN SSL scanning
-- `proxy` - Proxy-based scanning
-- `sni` - SNI (Server Name Indication) scanning
-- `ping` - TCP ping scanning
+- `sni`     - Scan Server Name Indication list from file
+- `cdn-ssl` - Scan using CDN SSL proxy with payload injection
+- `direct`  - Scan using direct connection to targets (Most accurate)
+- `proxy`   - Scan using a proxy with payload
+- `ping`    - Scan hosts using TCP ping
 
 ## Features
 - **High Performance**: Optimized with DNS Caching & Buffer Pooling
-- **Beautiful UI**: Modern, colorful, and adaptive terminal interface
+- **Beautiful UI**: Modern, colorful, and adaptive terminal inter
+### UI and UX Improvements
+- [MODIFY] [pkg/queuescanner/queuescanner.go](file:///x:/project/AdwanceSNI-2.0/flashscan-go/pkg/queuescanner/queuescanner.go):
+    - Enhance the banner with a more premium/modern ASCII art or border.
+    - Improve the progress bar design (e.g., using more detailed characters or different colors).
+    - Refine the results table layout for better readability on different terminal sizes.
+    - Add micro-animations or smoother transitions for the stat updates.
+
+### Documentation and CLI Consistency
+- [MODIFY] [README.md](file:///x:/project/AdwanceSNI-2.0/flashscan-go/README.md):
+    - Fix incorrect flag examples (e.g., `proxy-filename` should be `filename` or `-f`).
+    - Update installation instructions if needed.
+    - Ensure all commands described match the implementation in `cmd/`.
+face
 - **Dynamic Sizing**: Automatically adjusts to your screen size
 - **Concurrent**: Scans thousands of hosts in seconds
 - **Cross-platform**: Works on Windows, Linux, macOS

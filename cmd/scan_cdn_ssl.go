@@ -192,6 +192,9 @@ func runScanCDNSSL(cmd *cobra.Command, args []string) {
 		proxyHosts = append(proxyHosts, cidrHosts...)
 	}
 
+	fmt.Printf("%s%-32s  %s%s\n", ColorCyan+ColorBold, "PROXY ADDRESS", "RESPONSE STATUS", ColorReset)
+	fmt.Printf("%s%-32s  %s%s\n", ColorCyan, "-------------", "---------------", ColorReset)
+
 	qs := queuescanner.New(globalFlagThreads, scanCDNSSL)
 	fmt.Printf("%s\n\n", getScanCDNSSLPayloadDecoded())
 	qs.SetOptions(proxyHosts, cdnSSLFlagOutput, globalFlagStatInterval)

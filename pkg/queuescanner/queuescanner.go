@@ -75,11 +75,12 @@ func showCursor() {
 }
 
 func printBanner() {
-	banner := `╔══════════════════════════════════════════════════════════════════╗
-║                    ⚡ FlashScan-Go Scanner                       ║
-║           High Performance SNI Bug Host Scanner v2.0             ║
-║                  Created by SirYadav                            ║
-╚══════════════════════════════════════════════════════════════════╝`
+	banner := `  ______ _           _      _____                 
+ |  ____| |         | |    / ____|                
+ | |__  | | __ _ ___| |__ | (___   ___ __ _ _ __  
+ |  __| | |/ _` + "`" + ` / __| '_ \ \___ \ / __/ _` + "`" + ` | '_ \ 
+ | |    | | (_| \__ \ | | |____) | (_| (_| | | | |
+ |_|    |_|\__,_|___/_| |_|_____/ \___\__,_|_| |_| v2.0`
 	fmt.Printf("%s%s%s\n", ColorCyan+ColorBold, banner, ColorReset)
 }
 
@@ -183,7 +184,7 @@ func (ctx *Ctx) LogStat() {
 	if remaining < 0 {
 		remaining = 0
 	}
-	bar := strings.Repeat("█", filled) + strings.Repeat("░", remaining)
+	bar := ColorGreen + strings.Repeat("━", filled) + ColorWhite + strings.Repeat("─", remaining) + ColorReset
 
 	// Clear screen and redraw
 	fmt.Print("\033[2J\033[H")
@@ -193,34 +194,34 @@ func (ctx *Ctx) LogStat() {
 	fmt.Println()
 
 	// Progress box
-	fmt.Printf("%s┌──────────────────────────────────────────────────────────────────┐%s\n", ColorBlue, ColorReset)
-	fmt.Printf("%s│ 🎯 SCANNING IN PROGRESS...                                       │%s\n", ColorBlue, ColorReset)
-	fmt.Printf("%s├──────────────────────────────────────────────────────────────────┤%s\n", ColorBlue, ColorReset)
-
-	// Progress bar line - FIXED: prevent negative padding
-	progressLine := fmt.Sprintf("│ Progress: [%s%s%s] %s%.1f%%%s (%d/%d)",
-		ColorGreen, bar, ColorReset, ColorMagenta, percentage, ColorReset, scanComplete, total)
+	fmt.Printf("%s┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓%s\n", ColorBlue, ColorReset)
+	
+	// Progress bar line
+	progressLine := fmt.Sprintf("┃ %s⚡ SCANNING... %s[%s] %s%.1f%%%s",
+		ColorWhite+ColorBold, ColorReset, bar, ColorMagenta, percentage, ColorReset)
 	progressLineStripped := stripANSI(progressLine)
-	padding := 68 - len(progressLineStripped)
+	padding := 67 - len(progressLineStripped)
 	if padding < 0 {
 		padding = 0
 	}
-	fmt.Printf("%s%s%s%s│%s\n", ColorBlue, progressLine, strings.Repeat(" ", padding), ColorBlue, ColorReset)
+	fmt.Printf("%s%s%s┃%s\n", ColorBlue, progressLine, strings.Repeat(" ", padding), ColorBlue, ColorReset)
 
-	// Stats line - FIXED: prevent negative padding
-	statsLine := fmt.Sprintf("│ Success: %s✓ %d%s | Failed: %s✗ %d%s | Speed: %s⚡ %.0f/s%s | ETA: %s⏱️  %s%s",
-		ColorGreen, scanSuccess, ColorReset,
-		ColorRed, failed, ColorReset,
-		ColorMagenta, speed, ColorReset,
-		ColorCyan, eta, ColorReset)
-	statsLineStripped := stripANSI(statsLine)
-	padding = 68 - len(statsLineStripped)
-	if padding < 0 {
-		padding = 0
-	}
-	fmt.Printf("%s%s%s%s│%s\n", ColorBlue, statsLine, strings.Repeat(" ", padding), ColorBlue, ColorReset)
+	fmt.Printf("%s┠──────────────────────────────────────────────────────────────────┨%s\n", ColorBlue, ColorReset)
 
-	fmt.Printf("%s└──────────────────────────────────────────────────────────────────┘%s\n", ColorBlue, ColorReset)
+	// Stats line 1
+	statsLine1 := fmt.Sprintf("┃ %s✔ Success: %s%-5d %s┃ %s✖ Failed: %s%-5d %s┃ %s🚀 Speed: %s%-6.0f %s┃",
+		ColorGreen, ColorWhite, scanSuccess, ColorBlue,
+		ColorRed, ColorWhite, failed, ColorBlue,
+		ColorMagenta, ColorWhite, speed, ColorBlue)
+	fmt.Printf("%s%s%s\n", ColorBlue, statsLine1, ColorReset)
+
+	// Stats line 2
+	statsLine2 := fmt.Sprintf("┃ %s⏱  ETA: %s%-12s %s┃ %s📂 Scanned: %s%d/%d %s┃                    ┃",
+		ColorYellow, ColorWhite, eta, ColorBlue,
+		ColorCyan, ColorWhite, scanComplete, total, ColorBlue)
+	fmt.Printf("%s%s%s\n", ColorBlue, statsLine2, ColorReset)
+
+	fmt.Printf("%s┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛%s\n", ColorBlue, ColorReset)
 	fmt.Println()
 
 	// Results table

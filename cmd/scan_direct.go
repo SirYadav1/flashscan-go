@@ -186,8 +186,8 @@ func scanDirectRun(cmd *cobra.Command, args []string) {
 		fatal(err)
 	}
 
-	fmt.Printf("%-15s  %-3s  %-16s    %s\n", "IP Address", "Code", "Server", "Host")
-	fmt.Printf("%-15s  %-3s  %-16s    %s\n", "----------", "----", "------", "----")
+	fmt.Printf("%s%-15s  %-4s  %-16s    %s%s\n", ColorCyan+ColorBold, "IP ADDRESS", "CODE", "SERVER", "HOST", ColorReset)
+	fmt.Printf("%s%-15s  %-4s  %-16s    %s%s\n", ColorCyan, "----------", "----", "------", "----", ColorReset)
 
 	qs := queuescanner.New(globalFlagThreads, scanDirect)
 	qs.SetOptions(hosts, directFlagOutput, globalFlagStatInterval)

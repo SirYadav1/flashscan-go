@@ -179,6 +179,9 @@ func runScanProxy(cmd *cobra.Command, args []string) {
 		proxyHosts = append(proxyHosts, cidrHosts...)
 	}
 
+	fmt.Printf("%s%-32s %s%s\n", ColorCyan+ColorBold, "PROXY ADDRESS", "RESPONSE", ColorReset)
+	fmt.Printf("%s%-32s %s%s\n", ColorCyan, "-------------", "--------", ColorReset)
+
 	qs := queuescanner.New(globalFlagThreads, scanProxy)
 	fmt.Printf("%s\n\n", getScanProxyPayloadDecoded())
 	qs.SetOptions(proxyHosts, proxyFlagOutput, globalFlagStatInterval)

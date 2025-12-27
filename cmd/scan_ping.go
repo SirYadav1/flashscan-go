@@ -57,8 +57,8 @@ func pingRun(cmd *cobra.Command, args []string) {
 		fatal(err)
 	}
 
-	fmt.Printf("%-16s %-20s\n", "IP Address", "Host")
-	fmt.Printf("%-16s %-20s\n", "----------", "----")
+	fmt.Printf("%s%-16s %-20s%s\n", ColorCyan+ColorBold, "IP ADDRESS", "HOST", ColorReset)
+	fmt.Printf("%s%-16s %-20s%s\n", ColorCyan, "----------", "----", ColorReset)
 
 	qs := queuescanner.New(globalFlagThreads, pingHost)
 	qs.SetOptions(hosts, pingFlagOutput, globalFlagStatInterval)

@@ -95,8 +95,8 @@ func runScanSNI(cmd *cobra.Command, args []string) {
 		domains = append(domains, domain)
 	}
 
-	fmt.Printf("%-16s %-20s\n", "IP Address", "SNI")
-	fmt.Printf("%-16s %-20s\n", "----------", "----")
+	fmt.Printf("%s%-16s %-20s%s\n", ColorCyan+ColorBold, "IP ADDRESS", "SNI HOST", ColorReset)
+	fmt.Printf("%s%-16s %-20s%s\n", ColorCyan, "----------", "--------", ColorReset)
 
 	qs := queuescanner.New(globalFlagThreads, scanSNI)
 	qs.SetOptions(domains, sniFlagOutput, globalFlagStatInterval)
