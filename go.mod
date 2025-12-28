@@ -1,4 +1,4 @@
-module github.com/SirYadav1/flashscan-go
+module github.com/SirYadav1/flashscan-go/v2
 
 go 1.23.2
 
