@@ -11,8 +11,22 @@ import (
 	"sync"
 )
 
+// ANSI Color codes
+const (
+	ColorReset   = "\033[0m"
+	ColorRed     = "\033[31m"
+	ColorGreen   = "\033[32m"
+	ColorYellow  = "\033[33m"
+	ColorBlue    = "\033[34m"
+	ColorMagenta = "\033[35m"
+	ColorCyan    = "\033[36m"
+	ColorWhite   = "\033[37m"
+	ColorBold    = "\033[1m"
+)
+
 var (
-	ipRegex    = regexp.MustCompile(`\d+$`)
+	ipRegex    = regexp.MustCompile(`^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$`)
+	ipv6Regex  = regexp.MustCompile(`^([0-9a-fA-F:]+)$`)
 	dnsCache   sync.Map
 	bufferPool = sync.Pool{
 		New: func() interface{} {
@@ -23,7 +37,7 @@ var (
 
 func ResolveIP(ctx context.Context, host string) (string, error) {
 	// If it's already an IP, return it
-	if ipRegex.MatchString(host) {
+	if ipRegex.MatchString(host) || ipv6Regex.MatchString(host) {
 		return host, nil
 	}
 
@@ -33,7 +47,7 @@ func ResolveIP(ctx context.Context, host string) (string, error) {
 	}
 
 	// Lookup
-	ips, err := net.DefaultResolver.LookupIP(ctx, "ip4", host)
+	ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
 	if err != nil {
 		return "", err
 	}
@@ -86,9 +100,13 @@ func ReadFile(filename string) ([]string, error) {
 }
 
 func ipInc(ip net.IP) {
+	if len(ip) == 16 && ip.To4() == nil {
+		// IPv6 - don't increment
+		return
+	}
 	for j := len(ip) - 1; j >= 0; j-- {
 		ip[j]++
-		if ip[j] > 0 {
+		if ip[j] != 0 {
 			break
 		}
 	}
@@ -104,7 +122,7 @@ func IPsFromCIDR(cidr string) ([]string, error) {
 	for currentIP := ip.Mask(ipnet.Mask); ipnet.Contains(currentIP); ipInc(currentIP) {
 		ips = append(ips, currentIP.String())
 	}
-	if len(ips) <= 1 {
+	if len(ips) <= 2 {
 		return ips, nil
 	}
 

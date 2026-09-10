@@ -120,8 +120,8 @@ func scanDirect(ctx *queuescanner.Ctx, host string) {
 			}
 		}
 
-		address := fmt.Sprintf("%s:%s", ipStr, port)
-		network := "tcp4"
+		address := net.JoinHostPort(ipStr, port)
+		network := "tcp"
 
 		dialer := &net.Dialer{
 			Timeout: time.Duration(directFlagTimeoutConnect) * time.Second,
