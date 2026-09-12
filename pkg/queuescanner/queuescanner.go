@@ -75,12 +75,12 @@ func showCursor() {
 }
 
 func printBanner() {
-	banner := `  ______ _           _      _____                 
- |  ____| |         | |    / ____|                
- | |__  | | __ _ ___| |__ | (___   ___ __ _ _ __  
- |  __| | |/ _` + "`" + ` / __| '_ \ \___ \ / __/ _` + "`" + ` | '_ \ 
- | |    | | (_| \__ \ | | |____) | (_| (_| | | | |
- |_|    |_|\__,_|___/_| |_|_____/ \___\__,_|_| |_| v2.0`
+	banner := "  ______ _           _      _____                \n" +
+		"  |  ____| |         | |    / ____|               \n" +
+		"  | |__  | | __ _ ___| |__ | (___   ___ __ _ _ __ \n" +
+		"  |  __| | |/ _` / __| '_ \\ \\___ \\ / __/ _` | '_ \\ \n" +
+		"  | |    | | (_| \\__ \\ | | |____) | (_| (_| | | | |\n" +
+		"  |_|    |_|\\__,_|___/_| |_|_____/ \\___\\__,_|_| |_| v2.0"
 	fmt.Printf("%s%s%s\n", ColorCyan+ColorBold, banner, ColorReset)
 }
 
@@ -108,13 +108,13 @@ func getMaxResults() int {
 	return available
 }
 
-// Add result to buffer
+// Log prints a result immediately and stores it in buffer
 func (ctx *Ctx) Log(a ...any) {
 	msg := fmt.Sprint(a...)
+	fmt.Println(msg)
 
 	ctx.resultsMutex.Lock()
 	ctx.lastResults = append(ctx.lastResults, msg)
-	// Keep only last N results
 	if len(ctx.lastResults) > ctx.maxResults {
 		ctx.lastResults = ctx.lastResults[1:]
 	}
@@ -148,14 +148,14 @@ func visualWidth(s string) int {
 
 func (ctx *Ctx) printBoxLine(content string) {
 	w := visualWidth(content)
-	padding := 67 - w
+	padding := 74 - w
 	if padding < 0 {
 		padding = 0
 	}
-	fmt.Printf("%s%s%s┃%s\n", ColorBlue, content, strings.Repeat(" ", padding), ColorReset)
+	fmt.Printf("%s%s%s\n", content, strings.Repeat(" ", padding), ColorReset)
 }
 
-// Redraw entire screen with progress and results
+// Redraw only the progress box (top area) without clearing results below
 func (ctx *Ctx) LogStat() {
 	if ctx.statInterval > 0 {
 		now := nowNano()
@@ -188,7 +188,7 @@ func (ctx *Ctx) LogStat() {
 	}
 	eta := formatETA(etaSec)
 
-	// Progress bar - FIXED: prevent negative repeat counts
+	// Progress bar
 	barWidth := 40
 	filled := int(percentage / 100 * float64(barWidth))
 	if filled < 0 {
@@ -203,8 +203,8 @@ func (ctx *Ctx) LogStat() {
 	}
 	bar := ColorGreen + strings.Repeat("━", filled) + ColorWhite + strings.Repeat("─", remaining) + ColorReset
 
-	// Clear screen and redraw
-	fmt.Print("\033[2J\033[H")
+	// Move cursor to top of screen and redraw progress box only
+	fmt.Print("\033[H")
 
 	// Banner
 	printBanner()
@@ -212,7 +212,7 @@ func (ctx *Ctx) LogStat() {
 
 	// Progress box
 	fmt.Printf("%s┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓%s\n", ColorBlue, ColorReset)
-	
+
 	// Progress bar line
 	progressLine := fmt.Sprintf("┃ %s⚡ SCANNING... %s[%s] %s%.1f%%%s",
 		ColorWhite+ColorBold, ColorReset, bar, ColorMagenta, percentage, ColorReset)
@@ -234,36 +234,6 @@ func (ctx *Ctx) LogStat() {
 	ctx.printBoxLine(statsLine2)
 
 	fmt.Printf("%s┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛%s\n", ColorBlue, ColorReset)
-	fmt.Println()
-
-	// Results table
-	fmt.Printf("%s✅ LATEST %d RESULTS:%s\n", ColorGreen+ColorBold, ctx.maxResults, ColorReset)
-
-	ctx.resultsMutex.Lock()
-	resultsCount := len(ctx.lastResults)
-	if resultsCount > 0 {
-		for _, result := range ctx.lastResults {
-			// Color code based on content
-			if strings.Contains(result, "200") || strings.Contains(result, "✓") {
-				fmt.Printf("%s%s%s\n", ColorGreen, result, ColorReset)
-			} else if strings.Contains(result, "timeout") || strings.Contains(result, "failed") || strings.Contains(result, "✗") {
-				fmt.Printf("%s%s%s\n", ColorRed, result, ColorReset)
-			} else if strings.Contains(result, "301") || strings.Contains(result, "302") {
-				fmt.Printf("%s%s%s\n", ColorYellow, result, ColorReset)
-			} else {
-				fmt.Printf("%s\n", result)
-			}
-		}
-	} else {
-		fmt.Printf("%sWaiting for results...%s\n", ColorCyan, ColorReset)
-	}
-	ctx.resultsMutex.Unlock()
-
-	// Footer info
-	if ctx.OutputFile != "" {
-		fmt.Printf("\n%s💾 Results saved to:%s %s%s%s\n",
-			ColorGreen, ColorReset, ColorCyan, ctx.OutputFile, ColorReset)
-	}
 }
 
 // Print final summary
@@ -363,6 +333,8 @@ func (qs *QueueScanner) Start() {
 
 	// Initial display
 	qs.ctx.LogStat()
+	fmt.Println()
+	fmt.Printf("%s✅ LIVE RESULTS:%s\n", ColorGreen+ColorBold, ColorReset)
 
 	for _, host := range qs.ctx.hostList {
 		qs.queue <- host
