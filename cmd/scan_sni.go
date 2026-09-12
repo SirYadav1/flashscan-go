@@ -10,7 +10,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-
 	"github.com/SirYadav1/flashscan-go/pkg/queuescanner"
 )
 
@@ -37,10 +36,9 @@ func init() {
 }
 
 func scanSNI(ctx *queuescanner.Ctx, host string) {
-	// Resolve IP first (uses cache)
 	lookupCtx, cancel := context.WithTimeout(context.Background(), time.Duration(sniFlagTimeout)*time.Second)
 	defer cancel()
-	
+
 	ipStr, err := ResolveIP(lookupCtx, host)
 	if err != nil {
 		return
@@ -74,7 +72,7 @@ func scanSNI(ctx *queuescanner.Ctx, host string) {
 
 	formatted := fmt.Sprintf("%-16s %-20s", ip, host)
 	ctx.ScanSuccess(formatted)
-	ctx.Log(formatted)
+	ctx.Log(fmt.Sprintf("%s%s%s", ColorGreen, formatted, ColorReset))
 }
 
 func runScanSNI(cmd *cobra.Command, args []string) {
@@ -94,6 +92,9 @@ func runScanSNI(cmd *cobra.Command, args []string) {
 		}
 		domains = append(domains, domain)
 	}
+
+	fmt.Printf("%s%-16s %-20s%s\n", ColorCyan+ColorBold, "IP Address", "SNI Host", ColorReset)
+	fmt.Printf("%s%-16s %-20s%s\n", ColorDim, "----------", "--------", ColorReset)
 
 	qs := queuescanner.New(globalFlagThreads, scanSNI)
 	qs.SetOptions(domains, sniFlagOutput, globalFlagStatInterval)

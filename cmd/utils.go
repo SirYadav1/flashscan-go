@@ -22,6 +22,7 @@ const (
 	ColorCyan    = "\033[36m"
 	ColorWhite   = "\033[37m"
 	ColorBold    = "\033[1m"
+	ColorDim     = "\033[2m"
 )
 
 var (

@@ -12,7 +12,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-
 	"github.com/SirYadav1/flashscan-go/pkg/queuescanner"
 )
 
@@ -70,7 +69,6 @@ func scanCDNSSL(ctx *queuescanner.Ctx, host string) {
 		bug = cdnSSLFlagTarget
 	}
 
-	// Resolve IP for proxy
 	lookupCtx, lookupCancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer lookupCancel()
 
@@ -116,14 +114,13 @@ func scanCDNSSL(ctx *queuescanner.Ctx, host string) {
 		}
 
 		responseLines := []string{}
-		
-		// Use buffer pool
+
 		buf := bufferPool.Get().([]byte)
 		defer bufferPool.Put(buf)
-		
+
 		scanner := bufio.NewScanner(tlsConn)
-		scanner.Buffer(buf, 4096) // Use our pooled buffer
-		
+		scanner.Buffer(buf, 4096)
+
 		isPrefix := true
 
 		for scanner.Scan() {
@@ -138,13 +135,13 @@ func scanCDNSSL(ctx *queuescanner.Ctx, host string) {
 		}
 
 		if len(responseLines) == 0 || !strings.Contains(responseLines[0], " 101 ") {
-			ctx.Log(fmt.Sprintf("%-32s  %s", address, strings.Join(responseLines, " -- ")))
+			ctx.Log(fmt.Sprintf("%s%s%s", ColorRed, fmt.Sprintf("%-32s  %s", address, strings.Join(responseLines, " -- ")), ColorReset))
 			return
 		}
 
 		formatted := fmt.Sprintf("%-32s  %s", address, strings.Join(responseLines, " -- "))
 		ctx.ScanSuccess(formatted)
-		ctx.Log(formatted)
+		ctx.Log(fmt.Sprintf("%s%s%s", ColorGreen, formatted, ColorReset))
 
 		resultCh <- true
 	}()

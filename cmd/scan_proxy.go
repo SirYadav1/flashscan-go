@@ -11,7 +11,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-
 	"github.com/SirYadav1/flashscan-go/pkg/queuescanner"
 )
 
@@ -54,7 +53,6 @@ func init() {
 }
 
 func scanProxy(ctx *queuescanner.Ctx, host string) {
-
 	bug := proxyFlagBug
 	if bug == "" {
 		if ipRegex.MatchString(host) {
@@ -68,16 +66,7 @@ func scanProxy(ctx *queuescanner.Ctx, host string) {
 		bug = proxyFlagTarget
 	}
 
-	// Resolve IP for proxy
-	lookupCtx, lookupCancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer lookupCancel()
-
-	ipStr, err := ResolveIP(lookupCtx, host)
-	if err != nil {
-		return
-	}
-
-	address := net.JoinHostPort(ipStr, strconv.Itoa(proxyFlagProxyPort))
+	address := net.JoinHostPort(host, strconv.Itoa(proxyFlagProxyPort))
 
 	conn, err := net.DialTimeout("tcp", address, 3*time.Second)
 	if err != nil {
@@ -101,13 +90,7 @@ func scanProxy(ctx *queuescanner.Ctx, host string) {
 			return
 		}
 
-		// Use buffer pool
-		buf := bufferPool.Get().([]byte)
-		defer bufferPool.Put(buf)
-
 		scanner := bufio.NewScanner(conn)
-		scanner.Buffer(buf, 4096)
-		
 		isPrefix := true
 		responseLines := []string{}
 
@@ -134,7 +117,7 @@ func scanProxy(ctx *queuescanner.Ctx, host string) {
 
 		resultString := fmt.Sprintf("%-32s %s", address, strings.Join(responseLines, " -- "))
 		ctx.ScanSuccess(resultString)
-		ctx.Log(resultString)
+		ctx.Log(fmt.Sprintf("%s%s%s", ColorGreen, resultString, ColorReset))
 
 		resultCh <- true
 	}()

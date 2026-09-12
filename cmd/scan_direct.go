@@ -11,7 +11,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-
 	"github.com/SirYadav1/flashscan-go/pkg/queuescanner"
 )
 
@@ -160,12 +159,12 @@ func scanDirect(ctx *queuescanner.Ctx, host string) {
 		conn.Close()
 
 		if err != nil {
-			bufferPool.Put(buffer) // Return on error too
+			bufferPool.Put(buffer)
 			continue
 		}
 
 		response := string(buffer[:n])
-		bufferPool.Put(buffer) // Return to pool
+		bufferPool.Put(buffer)
 		statusCode, server, location := extractHTTPHeaders(response)
 
 		if directFlagHideLocation != "" && location == directFlagHideLocation {
@@ -176,7 +175,13 @@ func scanDirect(ctx *queuescanner.Ctx, host string) {
 		formatted := fmt.Sprintf("%-15s  %-3d   %-16s    %s", ipStr, statusCode, server, hostWithPort)
 
 		ctx.ScanSuccess(formatted)
-		ctx.Log(formatted)
+		if statusCode >= 200 && statusCode < 300 {
+			ctx.Log(fmt.Sprintf("%s%s%s", ColorGreen, formatted, ColorReset))
+		} else if statusCode >= 300 && statusCode < 400 {
+			ctx.Log(fmt.Sprintf("%s%s%s", ColorYellow, formatted, ColorReset))
+		} else {
+			ctx.Log(fmt.Sprintf("%s%s%s", ColorRed, formatted, ColorReset))
+		}
 	}
 }
 
@@ -185,6 +190,9 @@ func scanDirectRun(cmd *cobra.Command, args []string) {
 	if err != nil {
 		fatal(err)
 	}
+
+	fmt.Printf("%s%-15s  %-3s  %-16s    %s%s\n", ColorCyan+ColorBold, "IP Address", "Code", "Server", "Host", ColorReset)
+	fmt.Printf("%s%-15s  %-3s  %-16s    %s%s\n", ColorDim, "----------", "----", "------", "----", ColorReset)
 
 	qs := queuescanner.New(globalFlagThreads, scanDirect)
 	qs.SetOptions(hosts, directFlagOutput, globalFlagStatInterval)
