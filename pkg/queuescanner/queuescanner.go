@@ -155,7 +155,7 @@ func (ctx *Ctx) printBoxLine(content string) {
 	fmt.Printf("%s%s%s\n", content, strings.Repeat(" ", padding), ColorReset)
 }
 
-// Redraw only the progress box (top area) without clearing results below
+// Redraw entire screen with progress box and live results
 func (ctx *Ctx) LogStat() {
 	if ctx.statInterval > 0 {
 		now := nowNano()
@@ -203,8 +203,8 @@ func (ctx *Ctx) LogStat() {
 	}
 	bar := ColorGreen + strings.Repeat("━", filled) + ColorWhite + strings.Repeat("─", remaining) + ColorReset
 
-	// Move cursor to top of screen and redraw progress box only
-	fmt.Print("\033[H")
+	// Clear screen and redraw everything
+	fmt.Print("\033[2J\033[H")
 
 	// Banner
 	printBanner()
@@ -234,6 +234,25 @@ func (ctx *Ctx) LogStat() {
 	ctx.printBoxLine(statsLine2)
 
 	fmt.Printf("%s┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛%s\n", ColorBlue, ColorReset)
+	fmt.Println()
+
+	// Results
+	ctx.resultsMutex.Lock()
+	resultsCount := len(ctx.lastResults)
+	if resultsCount > 0 {
+		for _, result := range ctx.lastResults {
+			if strings.Contains(result, " 2") || strings.Contains(result, "✓") {
+				fmt.Printf("%s%s%s\n", ColorGreen, result, ColorReset)
+			} else if strings.Contains(result, " 3") {
+				fmt.Printf("%s%s%s\n", ColorYellow, result, ColorReset)
+			} else {
+				fmt.Printf("%s%s%s\n", ColorRed, result, ColorReset)
+			}
+		}
+	} else {
+		fmt.Printf("%sWaiting for results...%s\n", ColorCyan, ColorReset)
+	}
+	ctx.resultsMutex.Unlock()
 }
 
 // Print final summary
@@ -333,8 +352,6 @@ func (qs *QueueScanner) Start() {
 
 	// Initial display
 	qs.ctx.LogStat()
-	fmt.Println()
-	fmt.Printf("%s✅ LIVE RESULTS:%s\n", ColorGreen+ColorBold, ColorReset)
 
 	for _, host := range qs.ctx.hostList {
 		qs.queue <- host
