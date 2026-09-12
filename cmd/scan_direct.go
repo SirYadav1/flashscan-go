@@ -175,13 +175,15 @@ func scanDirect(ctx *queuescanner.Ctx, host string) {
 		formatted := fmt.Sprintf("%-15s  %-3d   %-16s    %s", ipStr, statusCode, server, hostWithPort)
 
 		ctx.ScanSuccess(formatted)
+		var color string
 		if statusCode >= 200 && statusCode < 300 {
-			ctx.Log(fmt.Sprintf("%s%s%s", ColorGreen, formatted, ColorReset))
+			color = ColorGreen
 		} else if statusCode >= 300 && statusCode < 400 {
-			ctx.Log(fmt.Sprintf("%s%s%s", ColorYellow, formatted, ColorReset))
+			color = ColorYellow
 		} else {
-			ctx.Log(fmt.Sprintf("%s%s%s", ColorRed, formatted, ColorReset))
+			color = ColorRed
 		}
+		ctx.Log(fmt.Sprintf("%s%s%s", color, formatted, ColorReset))
 	}
 }
 

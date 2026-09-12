@@ -357,7 +357,6 @@ func (qs *QueueScanner) run() {
 		}
 
 		qs.scanFunc(qs.ctx, host)
-
 		atomic.AddInt64(&qs.ctx.ScanComplete, 1)
 		qs.ctx.LogStat()
 	}
